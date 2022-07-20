@@ -11,5 +11,5 @@ library(glue)
 occurence_clean <- readRDS("data_inputs/occurence_clean.RDS") 
 shapefile <- readRDS("data_inputs/POL_adm2.sf.rds")
 
-list_vernacularName <- unique(occurence_clean$vernacularName)
-list_scientificName <- unique(occurence_clean$scientificName)
+list_vernacularName <- sort(unique(occurence_clean$vernacularName))
+list_scientificName <- sort(unique(occurence_clean$scientificName))

@@ -1,9 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400&family=Quicksand:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400&family=Quicksand:wght@400&family=Lato:wght@300;400&display=swap');
 
 
 * { 
-  font-family: 'Quicksand', sans-serif;
-  font-size: 16px;
+  font-family: 'Lato', sans-serif;
 }
 
 .well {
@@ -28,8 +27,7 @@
 }
 
 body {
-    line-height: 1.42857143;
-    background-color: #f9f7f2;
+  background-color: #f9f7f2;
 }
 
 h1 {
