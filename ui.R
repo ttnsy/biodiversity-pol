@@ -21,7 +21,7 @@ fluidPage(
             inline = T
           )
         ),
-        leafletOutput("map_occ"),
+        map_occ_ui("map_occ"),
         plotlyOutput("plot_timeline")
       ) 
     )

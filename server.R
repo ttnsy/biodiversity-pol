@@ -31,6 +31,12 @@ function(input, output, session){
   })
   
   # Data output -------------------------------------------------------------
+  count_preset_val <- reactiveVal(NULL)
+  observeEvent(input$count_preset, {
+    out <- input$count_preset
+    count_preset_val(out)
+  })
+  
   data_occ <- reactive({
     req(input$selectName)
     
@@ -46,63 +52,12 @@ function(input, output, session){
     return(out)
   })
   
-  ## Map
-  data_occ_summary <- reactive({
-    req(data_occ())
-    
-    out <- data_occ() %>% 
-      group_by(NAME_1, NAME_2) %>% 
-      summarise(
-        total_occurence = n(),
-        total_individualCount = sum(individualCount)
-      ) %>% 
-      ungroup()
-    
-    return(out)
-  })
-  
-  output$map_occ <- renderLeaflet({
-    req(data_occ_summary())
-    
-    data <- data_occ_summary() %>% 
-      mutate(NAME_2_ID = row_number())
-    
-    data <- data %>% 
-      left_join(shapefile) %>% 
-      st_as_sf()
-    
-    pal <- colorNumeric(palette = "YlOrRd", domain =  if(input$count_preset == "Occurence") data$total_occurence else data$total_individualCount)
-    
-    labels <- glue::glue(
-      "<b>{data$NAME_2}, {data$NAME_1}</b><br>
-    Total Occurence: {data$total_occurence} <br>
-    Total individualCount: {data$total_individualCount}"
-    ) %>% 
-      lapply(htmltools::HTML)
-    
-    leaflet(data) %>% # create map widget
-      addTiles() %>% # add basemap
-      addPolygons(
-        label = labels,
-        fillColor = if(input$count_preset == "Occurence") ~pal(total_occurence) else ~pal(total_individualCount) ,
-        fillOpacity = .8,
-        weight = 2,
-        color = "darkgray",
-        highlight = highlightOptions(
-          color = "black",
-          bringToFront = TRUE,
-          opacity = 0.8
-        ), 
-        layerId = ~NAME_2
-      ) %>% 
-      addLegend(
-        pal = pal,
-        values =  if(input$count_preset == "Occurence") ~total_occurence else ~total_individualCount,
-        opacity = 1,
-        title = glue("Total {input$count_preset}s"),
-        position = "bottomright"
-      )
-  })
+  callModule(
+    map_occ,
+    "map_occ",
+    count_preset_val,
+    data_occ
+  )
   
   ## Timeline
   output$plot_timeline <- renderPlotly({
