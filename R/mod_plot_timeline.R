@@ -43,11 +43,11 @@ plot_timeline <- function(input, output, session, count_preset_val, data_occ){
       )
     
     plot <- ggplot(plot_df, aes(x = year, y = values))+
-      geom_col(fill = "#dcd7ce", alpha = .5)+
+      geom_col(fill = "#c5d1bc", alpha = .5)+
       geom_line(color = "tomato4", alpha = .8)+
       geom_point(color = "#282e2a", aes(text = text))+
       labs(x = NULL, y = paste0('Total ', lab,'s')) +
-      theme_minimal()
+      theme_minimal(base_family = "Quicksand")
     
     plot %>% 
       ggplotly(tooltip = "text") %>%
