@@ -8,8 +8,8 @@ library(ggplot2)
 library(plotly)
 library(glue)
 
-df_occurence <- readRDS("biodiversity-data/df_occurence.RDS") 
-shapefile <- readRDS("biodiversity-data/POL_adm2.sf.rds")
+occurence_clean <- readRDS("data_inputs/occurence_clean.RDS") 
+shapefile <- readRDS("data_inputs/POL_adm2.sf.rds")
 
-list_vernacularName <- unique(df_occurence$vernacularName)
-list_scientificName <- unique(df_occurence$scientificName)
+list_vernacularName <- unique(occurence_clean$vernacularName)
+list_scientificName <- unique(occurence_clean$scientificName)

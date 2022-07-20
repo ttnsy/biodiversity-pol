@@ -46,7 +46,7 @@ function(input, output, session){
       col <- sym("scientificName")
     }
     
-    out <- df_occurence %>% 
+    out <- occurence_clean %>% 
       filter(!!col == input$selectName)
     
     return(out)
