@@ -1,0 +1,16 @@
+library(shiny)
+library(shinydashboard)
+library(dplyr)
+library(sf)
+library(leaflet)
+library(htmltools)
+library(lubridate)
+library(ggplot2)
+library(plotly)
+library(glue)
+
+df_occurence <- readRDS("biodiversity-data/df_occurence.RDS") 
+shapefile <- readRDS("biodiversity-data/POL_adm2.sf.rds")
+
+list_vernacularName <- unique(df_occurence$vernacularName)
+list_scientificName <- unique(df_occurence$scientificName)
