@@ -22,7 +22,7 @@ fluidPage(
           )
         ),
         map_occ_ui("map_occ"),
-        plotlyOutput("plot_timeline")
+        plot_timeline_ui("plot_timeline")
       ) 
     )
   )
