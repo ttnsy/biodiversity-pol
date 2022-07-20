@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@900&family=Poppins&family=Roboto+Slab:wght@700&display=swap');
+
+
+* { 
+  font-family: 'Poppins', sans-serif;
+}
+
+h1 {
+  font-family: 'Roboto Slab', serif;
+}
+
+h2 {
+  font-family: 'Roboto Slab', serif;
+}
+
+h3 {
+  font-family: 'Roboto Slab', serif;
+  font-size: "30px";
+}
+
+h4 {
+    font-family: 'Poppins', serif;
+    font-size: 14px;
+}
+
+.content {
+  padding-top: 60px;
+}
+
+.content-wrapper {
+  background-color: #fff;
+}
+
