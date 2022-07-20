@@ -32,6 +32,8 @@ function(input, output, session){
   
   # Data output -------------------------------------------------------------
   data_occ <- reactive({
+    req(input$selectName)
+    
     if(input$input_occ == "vernacularName"){
       col <- sym("vernacularName")
     } else {
@@ -46,6 +48,8 @@ function(input, output, session){
   
   ## Map
   data_occ_summary <- reactive({
+    req(data_occ())
+    
     out <- data_occ() %>% 
       group_by(NAME_1, NAME_2) %>% 
       summarise(
@@ -58,13 +62,16 @@ function(input, output, session){
   })
   
   output$map_occ <- renderLeaflet({
-    data <- data_occ_summary()
+    req(data_occ_summary())
+    
+    data <- data_occ_summary() %>% 
+      mutate(NAME_2_ID = row_number())
     
     data <- data %>% 
       left_join(shapefile) %>% 
       st_as_sf()
     
-    pal <- colorNumeric(palette = "YlOrRd", domain =  if(input$count_preset == "Total Occurence") data$total_occurence else data$total_individualCount)
+    pal <- colorNumeric(palette = "YlOrRd", domain =  if(input$count_preset == "Occurence") data$total_occurence else data$total_individualCount)
     
     labels <- glue::glue(
       "<b>{data$NAME_2}, {data$NAME_1}</b><br>
@@ -77,7 +84,7 @@ function(input, output, session){
       addTiles() %>% # add basemap
       addPolygons(
         label = labels,
-        fillColor = if(input$count_preset == "Total Occurence") ~pal(total_occurence) else ~pal(total_individualCount) ,
+        fillColor = if(input$count_preset == "Occurence") ~pal(total_occurence) else ~pal(total_individualCount) ,
         fillOpacity = .8,
         weight = 2,
         color = "darkgray",
@@ -87,30 +94,54 @@ function(input, output, session){
           opacity = 0.8
         ), 
         layerId = ~NAME_2
+      ) %>% 
+      addLegend(
+        pal = pal,
+        values =  if(input$count_preset == "Occurence") ~total_occurence else ~total_individualCount,
+        opacity = 1,
+        title = glue("Total {input$count_preset}s"),
+        position = "bottomright"
       )
   })
-  
   
   ## Timeline
   output$plot_timeline <- renderPlotly({
     plot_df <- data_occ() %>% 
       mutate(
         year = year(eventDate)
-      ) %>% 
-      group_by(year) %>% 
-      summarise(
-        occurence = n()
-      ) %>% 
-      ungroup() %>% 
+      ) 
+    
+    if(input$count_preset == "Occurence"){
+      lab <- "Occurence"
+      
+      plot_df <- plot_df %>% 
+        group_by(year) %>%
+        summarise(
+          values = n()
+        ) %>% 
+        ungroup()
+      
+    } else {
+      lab <- "individualCount"
+      
+      plot_df <- plot_df %>%
+        group_by(year)  %>%
+        summarise(
+          values = sum(individualCount)
+        ) %>% 
+        ungroup()
+    }
+    
+    plot_df <- plot_df %>%
       mutate(
-        text = glue("<b>{year}:</b> {occurence} {ifelse(occurence == 1, 'Observation', 'Observations')}")
+        text = glue("<b>{year}:</b> {values} {ifelse(values == 1, lab, paste0(lab,'s'))}")
       )
     
-    p <- ggplot(plot_df, aes(x = year, y = occurence))+
+    p <- ggplot(plot_df, aes(x = year, y = values))+
       geom_col(fill = "#dcd7ce", alpha = .5)+
       geom_line(color = "tomato4", alpha = .8)+
       geom_point(color = "#282e2a", aes(text = text))+
-      labs(x = NULL, y = NULL) +
+      labs(x = NULL, y = paste0('Total ', lab,'s')) +
       theme_minimal()
     
     p %>% 
@@ -120,19 +151,43 @@ function(input, output, session){
       ) %>%
       plotly::config(displayModeBar = F)
   })
-  
-#   map_click_data <- reactiveVal(NULL)
-#   
-#   observeEvent(input$map_occ_shape_click, {
-#     #capture the info of the clicked polygon
-#     click <- input$map_occ_shape_click
-#     out <- data_occ() %>% 
-#       filter(NAME_2 == click$id)
-#     map_click_data(out)
-#     
-#     x <- map_click_data()
-#     print(x)
-# })
+
+  observeEvent(input$map_occ_shape_click, {
+    click <- input$map_occ_shape_click
+    
+    data <- data_occ() %>%
+      filter(NAME_2 == click$id) %>% 
+      mutate(
+        eventTime = ifelse(
+          is.na(eventTime) | eventTime == '',
+          'Unknown',
+          eventTime
+        )
+      )
+    
+    labels <- glue::glue(
+      "<b>Observation Date:</b> {data$eventDate}<br>
+      <b>Observation Time:</b> {data$eventTime}<br>
+      <b>individualCount:</b> {data$individualCount}"
+    ) %>% 
+      lapply(htmltools::HTML)
+    
+    showModal(
+      modalDialog(
+        title = "Observation points:",
+        renderLeaflet({
+          leaflet(data) %>% 
+            addTiles() %>% 
+            addMarkers(
+              label = labels
+            )
+        }),
+        footer = tagList(
+          modalButton("Close")
+        )
+      )
+    )
+})
   
   
 }

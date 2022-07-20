@@ -1,40 +1,31 @@
-header <- dashboardHeader(
-  disable = TRUE
-)
-
-sidebar <- dashboardSidebar(
-  sidebarMenu(
-    radioButtons(
-      "input_occ",
-      "View occurence by:",
-      choices = c("vernacularName","scientificName")
-    ),
-    uiOutput("input_name")
-  )
-)
-
-body <- dashboardBody(
-  fluidPage(
-    fluidRow(
+fluidPage(
+  headerPanel("Poland Biodiversity Observations"),
+  
+  sidebarLayout(
+    sidebarPanel(
       radioButtons(
-        "count_preset",
-        label = "Show observations by:",
-        choices = c("Total Occurence", "Total individualCount"),
-        inline = T
-      )
+        "input_occ",
+        "View occurence by:",
+        choices = c("vernacularName","scientificName")
+      ),
+      uiOutput("input_name")
     ),
-    fluidRow(
-      box(
-        width = 6,
+    mainPanel(
+      verticalLayout(
+        conditionalPanel(
+          condition = "input.selectName != ''",
+          radioButtons(
+            "count_preset",
+            label = "Total observations by:",
+            choices = c("Occurence", "individualCount"),
+            inline = T
+          )
+        ),
         leafletOutput("map_occ"),
         plotlyOutput("plot_timeline")
-      )
+      ) 
     )
   )
 )
 
-dashboardPage(
-  header = header,
-  body = body,
-  sidebar = sidebar
-)
+
