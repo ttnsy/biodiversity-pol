@@ -2,8 +2,10 @@ fluidPage(
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
   ),
-  
-  headerPanel("Poland Biodiversity Observations"),
+  fluidRow(
+    headerPanel("Poland Biodiversity Observations")
+  ),
+  br(),
   sidebarLayout(
     sidebarPanel(
       radioButtons(
@@ -14,6 +16,7 @@ fluidPage(
       uiOutput("input_name")
     ),
     mainPanel(
+      class = "box",
       verticalLayout(
         conditionalPanel(
           condition = "input.selectName != ''",
@@ -25,6 +28,7 @@ fluidPage(
           )
         ),
         map_occ_ui("map_occ"),
+        br(),
         plot_timeline_ui("plot_timeline")
       ) 
     )
