@@ -10,7 +10,7 @@ fluidPage(
     sidebarPanel(
       radioButtons(
         "preset_col_name",
-        "View occurence by:",
+        "View species by:",
         choices = c("vernacularName","scientificName")
       ),
       uiOutput("preset_name_ui"),
