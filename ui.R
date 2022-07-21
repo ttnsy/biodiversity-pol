@@ -27,9 +27,9 @@ fluidPage(
       verticalLayout(
         uiOutput("count_preset_ui"),
         map_occ_ui("map_occ"),
-        br(),
+        hr(), br(),
         plot_timeline_ui("plot_timeline")
-      ) 
+      )
     )
   )
 )

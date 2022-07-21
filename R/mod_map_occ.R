@@ -1,12 +1,20 @@
 # UI ----------------------------------------------------------------------
 map_occ_ui <- function(id){
   ns <- NS(id)
-  
-  leafletOutput(ns("map_occ_out"))
+  tagList(
+    uiOutput(ns("map_message")),
+    leafletOutput(ns("map_occ_out"))
+  )
 }
 
 # Server ------------------------------------------------------------------
 map_occ <- function(input, output, session, count_preset_val, data_occ){
+  
+  observeEvent(data_occ(), {
+    output$map_message <- renderUI({
+      HTML("<i>*Click on the area to view the observation's points!</i>")
+    })
+  })
   
   data_occ_summary <- reactive({
     req(data_occ())
