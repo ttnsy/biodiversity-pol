@@ -13,7 +13,18 @@ info_species <- function(input, output, session, data_occ){
     summ <- data_occ() %>% 
       left_join(multimedia_clean) 
     
-    summ_img <- summ[!is.na(summ$accessURI),c("accessURI")][1]
+    summ_img <- summ[!is.na(summ$accessURI),c("accessURI", "rightsHolder")][1]
+
+    if(!is.na(summ_img$accessURI)){
+      summ_img <- glue(
+        '<figure>
+          <img src="{summ_img$accessURI}" class="responsive">
+          <figcaption><i>Image rights by {summ_img$rightsHolder}</i></figcaption>
+        </figure>'
+      )
+    } else {
+      summ_img <- "<i>Sorry, we don't have any image related to the selected species at the moment!</i>"
+    }
     
     summ_text <- summ %>%
       distinct(taxonRank, kingdom, family, scientificName, vernacularName) %>%
@@ -24,10 +35,10 @@ info_species <- function(input, output, session, data_occ){
     HTML(
       glue(
         '<hr>
-            <img src="{summ_img}" class="responsive">
-            <br>
-            <br>
-            {summ_text}'
+        {summ_img}
+        <br>
+        <br>
+        {summ_text}'
       )
     )
   })
