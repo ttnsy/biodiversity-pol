@@ -7,7 +7,7 @@ function(input, output, session){
         session,
         "selectName",
         label = "Select vernacularName:",
-        choices = c("",list_vernacularName),
+        choices = list_vernacularName,
         selected = "",
         server = TRUE
       )
@@ -16,34 +16,11 @@ function(input, output, session){
         session,
         "selectName",
         label = "Select scientificName:",
-        choices = c("",list_scientificName),
+        choices = list_scientificName,
         selected = "",
         server = TRUE
       )
     }
-  })
-  
-  observeEvent(input$selectName, {
-    output$count_preset_ui <- renderUI({
-      if(input$selectName != ""){
-        radioButtons(
-          "count_preset",
-          label = "Total observations by:",
-          choices = c("Occurence", "individualCount"),
-          inline = T
-        )
-      } else {
-        HTML("Please select at least one species!")
-      }
-    })
-    
-  })
-  
-  # Data output -------------------------------------------------------------
-  count_preset_val <- reactiveVal(NULL)
-  observeEvent(input$count_preset, {
-    out <- input$count_preset
-    count_preset_val(out)
   })
   
   data_occ <- reactive({
@@ -61,6 +38,60 @@ function(input, output, session){
     return(out)
   })
   
+  observeEvent(input$selectName, {
+    if(input$selectName != ""){
+      output$summary_ui <- renderUI({
+        req(data_occ())
+        
+        summ <- data_occ() %>% 
+          left_join(multimedia_clean) 
+        
+        
+        summ_img <- summ[!is.na(summ$accessURI),c("accessURI")][1]
+        print(summ)
+        print(summ_img)
+        
+        
+        summ_text <- summ %>%
+          distinct(taxonRank, kingdom, family, scientificName, vernacularName) %>%
+          mutate(across(.fns = ~ifelse(is.na(.) | . == '', "-", .)))
+
+        summ_text <- paste0("<b>",colnames(summ_text), "</b>",": ", summ_text, collapse = "<br>")
+
+        HTML(
+          glue(
+            '<hr>
+            <img src="{summ_img}" class="responsive">
+            <br>
+            <br>
+            {summ_text}'
+          )
+        )
+      })
+      
+      output$count_preset_ui <- renderUI({
+        radioButtons(
+          "count_preset",
+          label = "Total observations by:",
+          choices = c("Occurence", "individualCount"),
+          inline = T
+        )
+      })
+    } else {
+      output$count_preset_ui <- renderUI({
+        HTML("Please select at least one species!")
+      })
+    }
+  })
+  
+  count_preset_val <- reactiveVal(NULL)
+  observeEvent(input$count_preset, {
+    out <- input$count_preset
+    count_preset_val(out)
+  })
+  
+  
+  
   # Module calls ------------------------------------------------------------
   observeEvent(data_occ(), {
     callModule(
@@ -77,6 +108,5 @@ function(input, output, session){
       data_occ
     )
   })
-  
   
 }
