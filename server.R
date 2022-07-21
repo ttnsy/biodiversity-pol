@@ -3,24 +3,21 @@ function(input, output, session){
   # Initial input -----------------------------------------------------------
   observeEvent(input$input_occ, {
     if(input$input_occ == "vernacularName"){
-      updateSelectizeInput(
-        session,
-        "selectName",
-        label = "Select vernacularName:",
-        choices = list_vernacularName,
-        selected = "",
-        server = TRUE
-      )
+      label <- "Select vernacularName:"
+      choices <- list_vernacularName
     } else {
-      updateSelectizeInput(
-        session,
-        "selectName",
-        label = "Select scientificName:",
-        choices = list_scientificName,
-        selected = "",
-        server = TRUE
-      )
+      label <-  "Select scientificName:"
+      choices <-  list_scientificName
     }
+    
+    updateSelectizeInput(
+      session,
+      "selectName",
+      label = label,
+      choices = choices,
+      selected = "",
+      server = TRUE
+    )
   })
   
   data_occ <- reactive({
@@ -46,11 +43,7 @@ function(input, output, session){
         summ <- data_occ() %>% 
           left_join(multimedia_clean) 
         
-        
         summ_img <- summ[!is.na(summ$accessURI),c("accessURI")][1]
-        print(summ)
-        print(summ_img)
-        
         
         summ_text <- summ %>%
           distinct(taxonRank, kingdom, family, scientificName, vernacularName) %>%
