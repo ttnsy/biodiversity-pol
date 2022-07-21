@@ -36,32 +36,11 @@ function(input, output, session){
   })
   
   observeEvent(input$selectName, {
+    req(data_occ())
+    
     if(input$selectName != ""){
-      output$summary_ui <- renderUI({
-        req(data_occ())
-        
-        summ <- data_occ() %>% 
-          left_join(multimedia_clean) 
-        
-        summ_img <- summ[!is.na(summ$accessURI),c("accessURI")][1]
-        
-        summ_text <- summ %>%
-          distinct(taxonRank, kingdom, family, scientificName, vernacularName) %>%
-          mutate(across(.fns = ~ifelse(is.na(.) | . == '', "-", .)))
+      callModule(info_species, "info_species", data_occ)
 
-        summ_text <- paste0("<b>",colnames(summ_text), "</b>",": ", summ_text, collapse = "<br>")
-
-        HTML(
-          glue(
-            '<hr>
-            <img src="{summ_img}" class="responsive">
-            <br>
-            <br>
-            {summ_text}'
-          )
-        )
-      })
-      
       output$count_preset_ui <- renderUI({
         radioButtons(
           "count_preset",
@@ -78,12 +57,11 @@ function(input, output, session){
   })
   
   count_preset_val <- reactiveVal(NULL)
+  
   observeEvent(input$count_preset, {
     out <- input$count_preset
     count_preset_val(out)
   })
-  
-  
   
   # Module calls ------------------------------------------------------------
   observeEvent(data_occ(), {

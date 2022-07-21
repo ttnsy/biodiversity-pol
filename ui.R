@@ -19,7 +19,7 @@ fluidPage(
         label = "",
         choices = character(0)
       ),
-      uiOutput("summary_ui")
+      info_species_ui("info_species")
     ),
   # Main --------------------------------------------------------------------
     mainPanel(
