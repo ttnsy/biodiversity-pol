@@ -2,21 +2,13 @@ function(input, output, session){
   
   # Initial input -----------------------------------------------------------
   observeEvent(input$input_occ, {
-    output$input_name <- renderUI({
-      selectInput(
-        "selectName",
-        label = "",
-        choices = character(0),
-        multiple = TRUE
-      )
-    })
-    
     if(input$input_occ == "vernacularName"){
       updateSelectizeInput(
         session,
         "selectName",
         label = "Select vernacularName:",
-        choices = list_vernacularName,
+        choices = c("",list_vernacularName),
+        selected = "",
         server = TRUE
       )
     } else {
@@ -24,10 +16,27 @@ function(input, output, session){
         session,
         "selectName",
         label = "Select scientificName:",
-        choices = list_scientificName,
+        choices = c("",list_scientificName),
+        selected = "",
         server = TRUE
       )
     }
+  })
+  
+  observeEvent(input$selectName, {
+    output$count_preset_ui <- renderUI({
+      if(input$selectName != ""){
+        radioButtons(
+          "count_preset",
+          label = "Total observations by:",
+          choices = c("Occurence", "individualCount"),
+          inline = T
+        )
+      } else {
+        HTML("Please select at least one species!")
+      }
+    })
+    
   })
   
   # Data output -------------------------------------------------------------
@@ -53,18 +62,21 @@ function(input, output, session){
   })
   
   # Module calls ------------------------------------------------------------
-  callModule(
-    map_occ,
-    "map_occ",
-    count_preset_val,
-    data_occ
-  )
+  observeEvent(data_occ(), {
+    callModule(
+      map_occ,
+      "map_occ",
+      count_preset_val,
+      data_occ
+    )
+    
+    callModule(
+      plot_timeline,
+      "plot_timeline",
+      count_preset_val,
+      data_occ
+    )
+  })
   
-  callModule(
-    plot_timeline,
-    "plot_timeline",
-    count_preset_val,
-    data_occ
-  )
   
 }

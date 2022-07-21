@@ -7,26 +7,24 @@ fluidPage(
   ),
   br(),
   sidebarLayout(
+  # Sidebar -----------------------------------------------------------------
     sidebarPanel(
       radioButtons(
         "input_occ",
         "View occurence by:",
         choices = c("vernacularName","scientificName")
       ),
-      uiOutput("input_name")
+      selectInput(
+        "selectName",
+        label = "",
+        choices = character(0)
+      )
     ),
+  # Main --------------------------------------------------------------------
     mainPanel(
       class = "box",
       verticalLayout(
-        conditionalPanel(
-          condition = "input.selectName != ''",
-          radioButtons(
-            "count_preset",
-            label = "Total observations by:",
-            choices = c("Occurence", "individualCount"),
-            inline = T
-          )
-        ),
+        uiOutput("count_preset_ui"),
         map_occ_ui("map_occ"),
         br(),
         plot_timeline_ui("plot_timeline")

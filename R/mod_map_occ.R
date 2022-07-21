@@ -23,7 +23,7 @@ map_occ <- function(input, output, session, count_preset_val, data_occ){
   })
   
   output$map_occ_out <- renderLeaflet({
-    req(data_occ_summary())
+    req(count_preset_val())
     
     count_preset <- count_preset_val()
     

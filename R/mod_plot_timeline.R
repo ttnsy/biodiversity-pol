@@ -9,6 +9,8 @@ plot_timeline_ui <- function(id){
 plot_timeline <- function(input, output, session, count_preset_val, data_occ){
 
   output$plot_timeline_out <- renderPlotly({
+    req(count_preset_val())
+    
     count_preset <- count_preset_val()
     
     plot_df <- data_occ() %>% 
