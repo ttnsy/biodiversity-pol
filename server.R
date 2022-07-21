@@ -4,7 +4,7 @@ function(input, output, session){
   observeEvent(input$preset_col_name, {
     output$preset_name_ui <- renderUI({
       selectInput(
-        "selectName",
+        "preset_name",
         label = "",
         choices = character(0)
       )
@@ -20,7 +20,7 @@ function(input, output, session){
     
     updateSelectizeInput(
       session,
-      "selectName",
+      "preset_name",
       label = label,
       choices = choices,
       selected = "",
@@ -29,14 +29,14 @@ function(input, output, session){
   })
   
   # Data output -------------------------------------------------------------
-  count_preset_val <- reactiveVal(NULL)
-  observeEvent(input$count_preset, {
-    out <- input$count_preset
-    count_preset_val(out)
+  preset_count_val <- reactiveVal(NULL)
+  observeEvent(input$preset_count, {
+    out <- input$preset_count
+    preset_count_val(out)
   })
   
   data_occ <- reactive({
-    req(input$selectName)
+    req(input$preset_name)
     
     if(input$preset_col_name == "vernacularName"){
       col <- sym("vernacularName")
@@ -45,15 +45,15 @@ function(input, output, session){
     }
     
     out <- occurence_clean %>% 
-      filter(!!col == input$selectName)
+      filter(!!col == input$preset_name)
     
     return(out)
   })
   
-  observeEvent(input$selectName, {
+  observeEvent(input$preset_name, {
     req(data_occ())
     
-    if(input$selectName != ""){
+    if(input$preset_name != ""){
       callModule(info_species, "info_species", data_occ)
       
     }
@@ -63,14 +63,14 @@ function(input, output, session){
   callModule(
     map_occ,
     "map_occ",
-    count_preset_val,
+    preset_count_val,
     data_occ
   )
   
   callModule(
     plot_timeline,
     "plot_timeline",
-    count_preset_val,
+    preset_count_val,
     data_occ
   )
   

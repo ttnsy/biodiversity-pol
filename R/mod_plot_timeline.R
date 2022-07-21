@@ -6,19 +6,19 @@ plot_timeline_ui <- function(id){
 }
 
 # Server ------------------------------------------------------------------
-plot_timeline <- function(input, output, session, count_preset_val, data_occ){
+plot_timeline <- function(input, output, session, preset_count_val, data_occ){
 
   output$plot_timeline_out <- renderPlotly({
-    req(count_preset_val())
+    req(preset_count_val())
     
-    count_preset <- count_preset_val()
+    preset_count <- preset_count_val()
     
     plot_df <- data_occ() %>% 
       mutate(
         year = year(eventDate)
       ) 
     
-    if(count_preset == "Occurence"){
+    if(preset_count == "Occurence"){
       lab <- "Occurence"
       
       plot_df <- plot_df %>% 

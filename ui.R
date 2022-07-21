@@ -20,13 +20,13 @@ fluidPage(
       class = "box",
       verticalLayout(
         conditionalPanel(
-          condition = "input.selectName == ''",
+          condition = "input.preset_name == ''",
           p("Choose a species to start!")
         ),
         conditionalPanel(
-          condition = "input.selectName != ''",
+          condition = "input.preset_name != ''",
           radioButtons(
-            "count_preset",
+            "preset_count",
             label = "Total observations by:",
             choices = c("Occurence", "individualCount"),
             inline = T
