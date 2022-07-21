@@ -11,9 +11,9 @@ library(glue)
 
 
 # Read data ---------------------------------------------------------------
-occurence_clean <- readRDS("data_inputs/occurence_clean.RDS") 
-multimedia_clean <- readRDS("data_inputs/multimedia_clean.RDS") 
-shapefile <- readRDS("data_inputs/POL_adm2.sf.rds")
+occurence_clean <- readRDS("data/occurence_clean.RDS") 
+multimedia_clean <- readRDS("data/multimedia_clean.RDS") 
+shapefile <- readRDS("data/POL_adm2.sf.rds")
 
 ## global variable
 list_vernacularName <- sort(unique(occurence_clean[!occurence_clean$vernacularName == "",]$vernacularName))
