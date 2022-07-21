@@ -1,8 +1,16 @@
 function(input, output, session){
   
   # Initial input -----------------------------------------------------------
-  observeEvent(input$input_occ, {
-    if(input$input_occ == "vernacularName"){
+  observeEvent(input$preset_col_name, {
+    output$preset_name_ui <- renderUI({
+      selectInput(
+        "selectName",
+        label = "",
+        choices = character(0)
+      )
+    })
+    
+    if(input$preset_col_name == "vernacularName"){
       label <- "Select vernacularName:"
       choices <- list_vernacularName
     } else {
@@ -20,10 +28,17 @@ function(input, output, session){
     )
   })
   
+  # Data output -------------------------------------------------------------
+  count_preset_val <- reactiveVal(NULL)
+  observeEvent(input$count_preset, {
+    out <- input$count_preset
+    count_preset_val(out)
+  })
+  
   data_occ <- reactive({
     req(input$selectName)
     
-    if(input$input_occ == "vernacularName"){
+    if(input$preset_col_name == "vernacularName"){
       col <- sym("vernacularName")
     } else {
       col <- sym("scientificName")
@@ -40,44 +55,23 @@ function(input, output, session){
     
     if(input$selectName != ""){
       callModule(info_species, "info_species", data_occ)
-
-      output$count_preset_ui <- renderUI({
-        radioButtons(
-          "count_preset",
-          label = "Total observations by:",
-          choices = c("Occurence", "individualCount"),
-          inline = T
-        )
-      })
-    } else {
-      output$count_preset_ui <- renderUI({
-        HTML("Please select at least one species!")
-      })
+      
     }
   })
   
-  count_preset_val <- reactiveVal(NULL)
-  
-  observeEvent(input$count_preset, {
-    out <- input$count_preset
-    count_preset_val(out)
-  })
-  
   # Module calls ------------------------------------------------------------
-  observeEvent(data_occ(), {
-    callModule(
-      map_occ,
-      "map_occ",
-      count_preset_val,
-      data_occ
-    )
-    
-    callModule(
-      plot_timeline,
-      "plot_timeline",
-      count_preset_val,
-      data_occ
-    )
-  })
+  callModule(
+    map_occ,
+    "map_occ",
+    count_preset_val,
+    data_occ
+  )
+  
+  callModule(
+    plot_timeline,
+    "plot_timeline",
+    count_preset_val,
+    data_occ
+  )
   
 }

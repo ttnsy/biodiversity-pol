@@ -8,7 +8,7 @@ map_occ_ui <- function(id){
 }
 
 # Server ------------------------------------------------------------------
-map_occ <- function(input, output, session, count_preset_val, data_occ){
+map_occ <- function(input, output, session, preset_count_val, data_occ){
   
   observeEvent(data_occ(), {
     output$map_message <- renderUI({
@@ -31,9 +31,9 @@ map_occ <- function(input, output, session, count_preset_val, data_occ){
   })
   
   output$map_occ_out <- renderLeaflet({
-    req(count_preset_val())
+    req(preset_count_val())
     
-    count_preset <- count_preset_val()
+    preset_count <- preset_count_val()
     
     data <- data_occ_summary() %>% 
       mutate(NAME_2_ID = row_number())
@@ -42,7 +42,7 @@ map_occ <- function(input, output, session, count_preset_val, data_occ){
       left_join(shapefile) %>% 
       st_as_sf()
     
-    pal <- colorNumeric(palette = "YlOrRd", domain =  if(count_preset == "Occurence") data$total_occurence else data$total_individualCount)
+    pal <- colorNumeric(palette = "YlOrRd", domain =  if(preset_count == "Occurence") data$total_occurence else data$total_individualCount)
     
     labels <- glue::glue(
       "<b>{data$NAME_2}, {data$NAME_1}</b><br>
@@ -55,7 +55,7 @@ map_occ <- function(input, output, session, count_preset_val, data_occ){
       addTiles() %>% # add basemap
       addPolygons(
         label = labels,
-        fillColor = if(count_preset == "Occurence") ~pal(total_occurence) else ~pal(total_individualCount) ,
+        fillColor = if(preset_count == "Occurence") ~pal(total_occurence) else ~pal(total_individualCount) ,
         fillOpacity = .8,
         weight = 2,
         color = "darkgray",
@@ -68,9 +68,9 @@ map_occ <- function(input, output, session, count_preset_val, data_occ){
       ) %>% 
       addLegend(
         pal = pal,
-        values =  if(count_preset == "Occurence") ~total_occurence else ~total_individualCount,
+        values =  if(preset_count == "Occurence") ~total_occurence else ~total_individualCount,
         opacity = 1,
-        title = glue("Total {count_preset}s"),
+        title = glue("Total {preset_count}s"),
         position = "bottomright"
       )
   })

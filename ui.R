@@ -7,29 +7,35 @@ fluidPage(
   ),
   br(),
   sidebarLayout(
-  # Sidebar -----------------------------------------------------------------
     sidebarPanel(
       radioButtons(
-        "input_occ",
+        "preset_col_name",
         "View occurence by:",
         choices = c("vernacularName","scientificName")
       ),
-      selectInput(
-        "selectName",
-        label = "",
-        choices = character(0)
-      ),
+      uiOutput("preset_name_ui"),
       info_species_ui("info_species")
     ),
-  # Main --------------------------------------------------------------------
     mainPanel(
       class = "box",
       verticalLayout(
-        uiOutput("count_preset_ui"),
+        conditionalPanel(
+          condition = "input.selectName == ''",
+          p("Choose a species to start!")
+        ),
+        conditionalPanel(
+          condition = "input.selectName != ''",
+          radioButtons(
+            "count_preset",
+            label = "Total observations by:",
+            choices = c("Occurence", "individualCount"),
+            inline = T
+          )
+        ),
         map_occ_ui("map_occ"),
-        hr(), br(),
+        br(),
         plot_timeline_ui("plot_timeline")
-      )
+      ) 
     )
   )
 )
