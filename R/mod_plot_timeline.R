@@ -48,8 +48,15 @@ plot_timeline <- function(input, output, session, count_preset_val, data_occ){
       geom_col(fill = "#c5d1bc", alpha = .5)+
       geom_line(color = "tomato4", alpha = .8)+
       geom_point(color = "#282e2a", aes(text = text))+
-      labs(x = NULL, y = paste0('Total ', lab,'s')) +
-      theme_minimal(base_family = "Quicksand")
+      labs(
+        x = NULL,
+        y = paste0('Total ', lab,'s'),
+        title = "Yearly Observations Trend:"
+      ) +
+      theme_minimal(
+        base_family = "Quicksand",
+      )+
+      theme(title = element_text(family = "Merriweather"))
     
     plot %>% 
       ggplotly(tooltip = "text") %>%
